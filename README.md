@@ -28,7 +28,7 @@
 </head>
 <body>
 
-    <h1>Search with Google</h1>
+    <h1>Search with Bing</h1>
 
     <form id="searchForm">
         <input type="text" id="query" placeholder="Enter search term" required>
@@ -46,8 +46,8 @@
             const query = document.getElementById('query').value.trim();
             if (!query) return;
 
-            // Construir la URL de búsqueda de Google
-            const searchUrl = 'https://www.google.com/search?q=' + encodeURIComponent(query);
+            // Construir la URL de búsqueda de Bing
+            const searchUrl = 'https://www.bing.com/search?q=' + encodeURIComponent(query);
 
             // Actualizar el src del iframe para cargar los resultados en la misma página
             iframe.src = searchUrl;
