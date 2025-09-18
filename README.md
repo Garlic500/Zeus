@@ -18,6 +18,12 @@
             padding: 8px 12px;
             font-size: 16px;
         }
+        iframe {
+            width: 100%;
+            height: 80vh;
+            margin-top: 20px;
+            border: 1px solid #ccc;
+        }
     </style>
 </head>
 <body>
@@ -29,17 +35,22 @@
         <button type="submit">Search</button>
     </form>
 
+    <iframe id="resultFrame" src="" sandbox="allow-same-origin allow-scripts allow-forms"></iframe>
+
     <script>
         const form = document.getElementById('searchForm');
+        const iframe = document.getElementById('resultFrame');
 
         form.addEventListener('submit', function (e) {
             e.preventDefault();
             const query = document.getElementById('query').value.trim();
             if (!query) return;
 
-            // Redirigir al usuario a la URL de búsqueda de Google
+            // Construir la URL de búsqueda de Google
             const searchUrl = 'https://www.google.com/search?q=' + encodeURIComponent(query);
-            window.location.href = searchUrl; // Redirige la página
+
+            // Actualizar el src del iframe para cargar los resultados en la misma página
+            iframe.src = searchUrl;
         });
     </script>
 
