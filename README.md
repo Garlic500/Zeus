@@ -1,9 +1,9 @@
-
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simple Search Proxy with DuckDuckGo</title>
+    <title>Simple Search Proxy</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -54,37 +54,37 @@
             const query = document.getElementById('query').value.trim();
             if (!query) return;
 
-            // Realizar la solicitud a la API de DuckDuckGo
-            fetch(`https://api.duckduckgo.com/?q=${encodeURIComponent(query)}&format=json`)
-            .then(response => response.json())
-            .then(data => {
-                // Limpiar resultados previos
-                resultsDiv.innerHTML = '';
+            // Utilizar el proxy público para realizar la solicitud
+            const proxyUrl = 'https://api.allorigins.win/get?url=';
+            const targetUrl = `https://duckduckgo.com/?q=${encodeURIComponent(query)}&format=json`;
 
-                // Extraer resultados relevantes
-                const relatedTopics = data.RelatedTopics;
+            fetch(proxyUrl + encodeURIComponent(targetUrl))
+                .then(response => response.json())
+                .then(data => {
+                    const json = JSON.parse(data.contents);
+                    resultsDiv.innerHTML = ''; // Limpiar resultados previos
 
-                // Si hay resultados, mostrarlos
-                if (relatedTopics && relatedTopics.length > 0) {
-                    relatedTopics.forEach(topic => {
-                        if (topic.Result) {
-                            const resultItem = document.createElement('div');
-                            resultItem.classList.add('result-item');
-                            resultItem.innerHTML = `
-                                <a href="${topic.FirstURL}" target="_blank">${topic.Text}</a>
-                                <p>${topic.Snippet || 'No description available.'}</p>
-                            `;
-                            resultsDiv.appendChild(resultItem);
-                        }
-                    });
-                } else {
-                    resultsDiv.innerHTML = 'No se encontraron resultados.';
-                }
-            })
-            .catch(error => {
-                console.error('Error al obtener los resultados de búsqueda:', error);
-                resultsDiv.innerHTML = 'Error al realizar la búsqueda.';
-            });
+                    // Extraer y mostrar resultados
+                    if (json.RelatedTopics && json.RelatedTopics.length > 0) {
+                        json.RelatedTopics.forEach(topic => {
+                            if (topic.Result) {
+                                const resultItem = document.createElement('div');
+                                resultItem.classList.add('result-item');
+                                resultItem.innerHTML = `
+                                    <a href="${topic.FirstURL}" target="_blank">${topic.Text}</a>
+                                    <p>${topic.Snippet || 'No description available.'}</p>
+                                `;
+                                resultsDiv.appendChild(resultItem);
+                            }
+                        });
+                    } else {
+                        resultsDiv.innerHTML = 'No se encontraron resultados.';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error al obtener los resultados de búsqueda:', error);
+                    resultsDiv.innerHTML = 'Error al realizar la búsqueda.';
+                });
         });
     </script>
 
