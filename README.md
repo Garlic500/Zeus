@@ -22,7 +22,7 @@
 </head>
 <body>
 
-    <h1>Search with DuckDuckGo</h1>
+    <h1>Search with Google</h1>
 
     <form id="searchForm">
         <input type="text" id="query" placeholder="Enter search term" required>
@@ -37,8 +37,8 @@
             const query = document.getElementById('query').value.trim();
             if (!query) return;
 
-            // Redirigir al usuario a la URL de búsqueda de DuckDuckGo
-            const searchUrl = 'https://duckduckgo.com/?q=' + encodeURIComponent(query);
+            // Redirigir al usuario a la URL de búsqueda de Google
+            const searchUrl = 'https://www.google.com/search?q=' + encodeURIComponent(query);
             window.location.href = searchUrl; // Redirige la página
         });
     </script>
