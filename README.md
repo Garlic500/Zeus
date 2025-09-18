@@ -58,9 +58,13 @@
             fetch(`https://api.duckduckgo.com/?q=${encodeURIComponent(query)}&format=json`)
             .then(response => response.json())
             .then(data => {
-                // Mostrar los resultados
+                // Limpiar resultados previos
                 resultsDiv.innerHTML = '';
+
+                // Extraer resultados relevantes
                 const relatedTopics = data.RelatedTopics;
+
+                // Si hay resultados, mostrarlos
                 if (relatedTopics && relatedTopics.length > 0) {
                     relatedTopics.forEach(topic => {
                         if (topic.Result) {
@@ -68,6 +72,7 @@
                             resultItem.classList.add('result-item');
                             resultItem.innerHTML = `
                                 <a href="${topic.FirstURL}" target="_blank">${topic.Text}</a>
+                                <p>${topic.Snippet || 'No description available.'}</p>
                             `;
                             resultsDiv.appendChild(resultItem);
                         }
