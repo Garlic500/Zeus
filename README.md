@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simple Search Proxy</title>
+    <title>Simple Search Proxy with DuckDuckGo</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -36,7 +36,7 @@
 </head>
 <body>
 
-    <h1>Search with Bing</h1>
+    <h1>Search with DuckDuckGo</h1>
 
     <form id="searchForm">
         <input type="text" id="query" placeholder="Enter search term" required>
@@ -49,35 +49,28 @@
         const form = document.getElementById('searchForm');
         const resultsDiv = document.getElementById('results');
 
-        // Aquí coloca tu clave de API de Bing
-        const apiKey = 'TU_CLAVE_DE_API_DE_BING';
-        const endpoint = 'https://api.cognitive.microsoft.com/bing/v7.0/search';
-
         form.addEventListener('submit', function (e) {
             e.preventDefault();
             const query = document.getElementById('query').value.trim();
             if (!query) return;
 
-            // Realizar la solicitud a la API de Bing
-            fetch(`${endpoint}?q=${encodeURIComponent(query)}`, {
-                headers: {
-                    'Ocp-Apim-Subscription-Key': apiKey
-                }
-            })
+            // Realizar la solicitud a la API de DuckDuckGo
+            fetch(`https://api.duckduckgo.com/?q=${encodeURIComponent(query)}&format=json`)
             .then(response => response.json())
             .then(data => {
                 // Mostrar los resultados
                 resultsDiv.innerHTML = '';
-                const webPages = data.webPages.value;
-                if (webPages && webPages.length > 0) {
-                    webPages.forEach(page => {
-                        const resultItem = document.createElement('div');
-                        resultItem.classList.add('result-item');
-                        resultItem.innerHTML = `
-                            <a href="${page.url}" target="_blank">${page.name}</a>
-                            <p>${page.snippet}</p>
-                        `;
-                        resultsDiv.appendChild(resultItem);
+                const relatedTopics = data.RelatedTopics;
+                if (relatedTopics && relatedTopics.length > 0) {
+                    relatedTopics.forEach(topic => {
+                        if (topic.Result) {
+                            const resultItem = document.createElement('div');
+                            resultItem.classList.add('result-item');
+                            resultItem.innerHTML = `
+                                <a href="${topic.FirstURL}" target="_blank">${topic.Text}</a>
+                            `;
+                            resultsDiv.appendChild(resultItem);
+                        }
                     });
                 } else {
                     resultsDiv.innerHTML = 'No se encontraron resultados.';
@@ -89,11 +82,6 @@
             });
         });
     </script>
-
-    <footer>
-        <p>About (Zeus proxy) under construction</p>
-        <p><a href="https://garlic500.github.io/Zeus/">garlic500.github.io/Zeus/</a></p>
-    </footer>
 
 </body>
 </html>
