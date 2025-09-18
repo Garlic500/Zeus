@@ -18,11 +18,19 @@
             padding: 8px 12px;
             font-size: 16px;
         }
-        iframe {
-            width: 100%;
-            height: 80vh;
+        #results {
             margin-top: 20px;
-            border: 1px solid #ccc;
+        }
+        .result-item {
+            margin-bottom: 15px;
+        }
+        .result-item a {
+            font-size: 18px;
+            color: #0078d4;
+            text-decoration: none;
+        }
+        .result-item p {
+            font-size: 14px;
         }
     </style>
 </head>
@@ -35,22 +43,50 @@
         <button type="submit">Search</button>
     </form>
 
-    <iframe id="resultFrame" src="" sandbox="allow-same-origin allow-scripts allow-forms"></iframe>
+    <div id="results"></div>
 
     <script>
         const form = document.getElementById('searchForm');
-        const iframe = document.getElementById('resultFrame');
+        const resultsDiv = document.getElementById('results');
+
+        // Aquí coloca tu clave de API de Bing
+        const apiKey = 'TU_CLAVE_DE_API_DE_BING';
+        const endpoint = 'https://api.cognitive.microsoft.com/bing/v7.0/search';
 
         form.addEventListener('submit', function (e) {
             e.preventDefault();
             const query = document.getElementById('query').value.trim();
             if (!query) return;
 
-            // Construir la URL de búsqueda de Bing
-            const searchUrl = 'https://www.bing.com/search?q=' + encodeURIComponent(query);
-
-            // Actualizar el src del iframe para cargar los resultados en la misma página
-            iframe.src = searchUrl;
+            // Realizar la solicitud a la API de Bing
+            fetch(`${endpoint}?q=${encodeURIComponent(query)}`, {
+                headers: {
+                    'Ocp-Apim-Subscription-Key': apiKey
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Mostrar los resultados
+                resultsDiv.innerHTML = '';
+                const webPages = data.webPages.value;
+                if (webPages && webPages.length > 0) {
+                    webPages.forEach(page => {
+                        const resultItem = document.createElement('div');
+                        resultItem.classList.add('result-item');
+                        resultItem.innerHTML = `
+                            <a href="${page.url}" target="_blank">${page.name}</a>
+                            <p>${page.snippet}</p>
+                        `;
+                        resultsDiv.appendChild(resultItem);
+                    });
+                } else {
+                    resultsDiv.innerHTML = 'No se encontraron resultados.';
+                }
+            })
+            .catch(error => {
+                console.error('Error al obtener los resultados de búsqueda:', error);
+                resultsDiv.innerHTML = 'Error al realizar la búsqueda.';
+            });
         });
     </script>
 
