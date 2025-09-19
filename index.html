@@ -2,32 +2,33 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>Buscador local con FlexSearch - Corregido</title>
+  <title>Buscador local con enlaces</title>
   <script src="https://cdn.jsdelivr.net/npm/flexsearch@0.7.31/dist/flexsearch.bundle.js"></script>
   <style>
     body { font-family: Arial, sans-serif; max-width: 600px; margin: 20px auto; }
-    input { width: 100%; padding: 10px; font-size: 1em; }
+    input { width: 100%; padding: 10px; font-size: 1em; margin-bottom: 15px; }
     .resultado { border-bottom: 1px solid #ccc; padding: 10px 0; }
-    .titulo { font-weight: bold; }
-    .descripcion { color: #555; }
+    .titulo a { font-weight: bold; color: #0074D9; text-decoration: none; }
+    .titulo a:hover { text-decoration: underline; }
+    .descripcion { color: #555; margin-top: 5px; }
   </style>
 </head>
 <body>
 
-<h1>Buscador local con FlexSearch</h1>
+<h1>Buscador local con enlaces</h1>
 <input type="text" id="buscador" placeholder="Escribe para buscar..." autocomplete="off" />
 
 <div id="resultados"></div>
 
 <script>
   const documentos = [
-    { id: 1, titulo: "Manzana", descripcion: "Una fruta roja y dulce." },
-    { id: 2, titulo: "Banana", descripcion: "Fruta amarilla y alargada, rica en potasio." },
-    { id: 3, titulo: "Cereza", descripcion: "Fruta pequeña y roja, muy sabrosa." },
-    { id: 4, titulo: "Durazno", descripcion: "Fruta con piel suave y pulpa dulce." },
-    { id: 5, titulo: "Naranja", descripcion: "Fruta cítrica, rica en vitamina C." },
-    { id: 6, titulo: "Pera", descripcion: "Fruta jugosa con forma característica." },
-    { id: 7, titulo: "Piña", descripcion: "Fruta tropical con sabor dulce y ácido." },
+    { id: 1, titulo: "Manzana", descripcion: "Una fruta roja y dulce.", url: "https://es.wikipedia.org/wiki/Manzana" },
+    { id: 2, titulo: "Banana", descripcion: "Fruta amarilla y alargada, rica en potasio.", url: "https://es.wikipedia.org/wiki/Banana" },
+    { id: 3, titulo: "Cereza", descripcion: "Fruta pequeña y roja, muy sabrosa.", url: "https://es.wikipedia.org/wiki/Cereza" },
+    { id: 4, titulo: "Durazno", descripcion: "Fruta con piel suave y pulpa dulce.", url: "https://es.wikipedia.org/wiki/Durazno" },
+    { id: 5, titulo: "Naranja", descripcion: "Fruta cítrica, rica en vitamina C.", url: "https://es.wikipedia.org/wiki/Naranja_(fruta)" },
+    { id: 6, titulo: "Pera", descripcion: "Fruta jugosa con forma característica.", url: "https://es.wikipedia.org/wiki/Pera" },
+    { id: 7, titulo: "Piña", descripcion: "Fruta tropical con sabor dulce y ácido.", url: "https://es.wikipedia.org/wiki/Piña" },
   ];
 
   const index = new FlexSearch.Document({
@@ -48,11 +49,9 @@
 
     if (!query) return;
 
-    // Buscar en ambos campos y combinar resultados
     const resultadosTitulo = index.search(query, { field: "titulo", limit: 20, enrich: true });
     const resultadosDescripcion = index.search(query, { field: "descripcion", limit: 20, enrich: true });
 
-    // Combinar resultados únicos
     const resultadosUnicos = new Map();
 
     resultadosTitulo.forEach(r => {
@@ -72,7 +71,7 @@
       const div = document.createElement("div");
       div.className = "resultado";
       div.innerHTML = `
-        <div class="titulo">${doc.titulo}</div>
+        <div class="titulo"><a href="${doc.url}" target="_blank" rel="noopener noreferrer">${doc.titulo}</a></div>
         <div class="descripcion">${doc.descripcion}</div>
       `;
       resultadosDiv.appendChild(div);
