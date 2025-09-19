@@ -17,17 +17,23 @@
       background-color: #222;
       color: white;
       display: flex;
-      gap: 10px;
+      gap: 5px;
     }
     #navBar input {
       flex: 1;
-      padding: 5px;
+      padding: 6px;
       font-size: 16px;
+      border: none;
+      border-radius: 4px;
     }
     #navBar button {
-      padding: 5px 10px;
+      padding: 6px 12px;
       font-size: 16px;
       cursor: pointer;
+      border: none;
+      border-radius: 4px;
+      background-color: #4CAF50;
+      color: white;
     }
     iframe {
       flex: 1;
@@ -56,21 +62,25 @@
     let value = input.value.trim();
     if (!value) return;
 
-    // Si empieza con http, lo usamos como URL directa
     let target;
+    // Si empieza con http, usa como URL directa
     if (value.startsWith("http://") || value.startsWith("https://")) {
       target = value;
     } else {
-      // Sino hacemos una búsqueda en DuckDuckGo
-      target = "https://duckduckgo.com/?q=" + encodeURIComponent(value);
+      // Si no, buscar en Wikipedia (funciona en iframe)
+      target = "https://en.wikipedia.org/wiki/" + encodeURIComponent(value);
     }
 
+    // Cambia el iframe al Worker con la URL
     frame.src = workerURL + "?h=" + encodeURIComponent(target);
   }
 
   function reload() {
     frame.contentWindow.location.reload();
   }
+
+  // Opción: carga página inicial
+  frame.src = workerURL + "?h=" + encodeURIComponent("https://en.wikipedia.org/wiki/Main_Page");
 </script>
 
 </body>
