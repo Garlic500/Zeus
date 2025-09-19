@@ -2,31 +2,80 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>Buscador DuckDuckGo con popup</title>
+  <title>Buscador con API DuckDuckGo</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 700px; margin: 20px auto; }
+    input { width: 70%; padding: 8px; }
+    button { padding: 8px 12px; }
+    .resultado { margin-top: 20px; }
+    .resultado a { text-decoration: none; color: #0074D9; }
+    .resultado a:hover { text-decoration: underline; }
+    .resultado p { margin: 5px 0; }
+  </style>
 </head>
 <body>
-  <h1>Buscador DuckDuckGo</h1>
-  <input type="text" id="query" placeholder="Escribe tu búsqueda" style="width:300px;" />
-  <button onclick="buscar()">Buscar</button>
 
-  <script>
-    function buscar() {
-      const q = document.getElementById('query').value.trim();
-      if (!q) return alert('Por favor ingresa un término de búsqueda.');
-      
-      // Abrir popup con opciones para evitar bloqueos
-      const width = 800;
-      const height = 600;
-      const left = (screen.width/2) - (width/2);
-      const top = (screen.height/2) - (height/2);
+<h1>Buscador DuckDuckGo (API Instantánea)</h1>
+<input id="query" type="text" placeholder="Escribe tu búsqueda" />
+<button onclick="buscar()">Buscar</button>
 
-      const url = 'https://duckduckgo.com/?q=' + encodeURIComponent(q);
-      const popup = window.open(url, 'BuscadorDuckDuckGo', `width=${width},height=${height},top=${top},left=${left},resizable=yes,scrollbars=yes`);
+<div id="resultados" class="resultado"></div>
 
-      if (!popup || popup.closed || typeof popup.closed == 'undefined') {
-        alert('El popup fue bloqueado. Por favor permite popups para este sitio.');
-      }
+<script>
+async function buscar() {
+  const q = document.getElementById('query').value.trim();
+  const resDiv = document.getElementById('resultados');
+  resDiv.innerHTML = '';
+
+  if (!q) {
+    alert('Por favor ingresa un término de búsqueda.');
+    return;
+  }
+
+  const url = `https://api.duckduckgo.com/?q=${encodeURIComponent(q)}&format=json&no_redirect=1&skip_disambig=1`;
+
+  try {
+    const response = await fetch(url);
+    if (!response.ok) throw new Error('Error en la API');
+    const data = await response.json();
+
+    let html = '';
+
+    if (data.AbstractURL && data.AbstractText) {
+      html += `<h2>Resumen:</h2><p>${data.AbstractText} <a href="${data.AbstractURL}" target="_blank">[Más info]</a></p>`;
     }
-  </script>
+
+    if (data.RelatedTopics && data.RelatedTopics.length > 0) {
+      html += `<h3>Resultados relacionados:</h3>`;
+      data.RelatedTopics.forEach(topic => {
+        if (topic.Text && topic.FirstURL) {
+          html += `<p><a href="${topic.FirstURL}" target="_blank">${topic.Text}</a></p>`;
+        } else if (topic.Topics) {
+          // Subtemas
+          topic.Topics.forEach(subtopic => {
+            if (subtopic.Text && subtopic.FirstURL) {
+              html += `<p><a href="${subtopic.FirstURL}" target="_blank">${subtopic.Text}</a></p>`;
+            }
+          });
+        }
+      });
+    }
+
+    if (!html) html = '<p>No se encontraron resultados.</p>';
+
+    resDiv.innerHTML = html;
+
+  } catch (error) {
+    resDiv.innerHTML = '<p>Error al obtener resultados.</p>';
+    console.error(error);
+  }
+}
+
+// Permitir búsqueda con Enter
+document.getElementById('query').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') buscar();
+});
+</script>
+
 </body>
 </html>
