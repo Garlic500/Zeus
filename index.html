@@ -2,43 +2,45 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>Buscador local con enlaces</title>
+  <title> Xbox Cloud Gaming</title>
   <script src="https://cdn.jsdelivr.net/npm/flexsearch@0.7.31/dist/flexsearch.bundle.js"></script>
   <style>
-    body { font-family: Arial, sans-serif; max-width: 600px; margin: 20px auto; }
-    input { width: 100%; padding: 10px; font-size: 1em; margin-bottom: 15px; }
-    .resultado { border-bottom: 1px solid #ccc; padding: 10px 0; }
-    .titulo a { font-weight: bold; color: #0074D9; text-decoration: none; }
-    .titulo a:hover { text-decoration: underline; }
-    .descripcion { color: #555; margin-top: 5px; }
+    body { font-family: Arial, sans-serif; max-width: 700px; margin: 20px auto; }
+    input { width: 100%; padding: 10px; font-size: 1.1em; margin-bottom: 15px; }
+    .resultado { border-bottom: 1px solid #ddd; padding: 10px 0; }
+    .titulo { font-weight: bold; font-size: 1.2em; color: #2c3e50; }
+    .categoria { font-style: italic; color: #7f8c8d; margin-top: 5px; }
+    .descripcion { margin-top: 5px; color: #555; }
   </style>
 </head>
 <body>
 
-<h1>Buscador local con enlaces</h1>
-<input type="text" id="buscador" placeholder="Escribe para buscar..." autocomplete="off" />
+<h1>Buscador Local de Juegos</h1>
+<input type="text" id="buscador" placeholder="Busca un juego o servicio..." autocomplete="off" />
 
 <div id="resultados"></div>
 
 <script>
-  const documentos = [
-    { id: 1, titulo: "Manzana", descripcion: "Una fruta roja y dulce.", url: "https://es.wikipedia.org/wiki/Manzana" },
-    { id: 2, titulo: "Banana", descripcion: "Fruta amarilla y alargada, rica en potasio.", url: "https://es.wikipedia.org/wiki/Banana" },
-    { id: 3, titulo: "Cereza", descripcion: "Fruta pequeña y roja, muy sabrosa.", url: "https://es.wikipedia.org/wiki/Cereza" },
-    { id: 4, titulo: "Durazno", descripcion: "Fruta con piel suave y pulpa dulce.", url: "https://es.wikipedia.org/wiki/Durazno" },
-    { id: 5, titulo: "Naranja", descripcion: "Fruta cítrica, rica en vitamina C.", url: "https://es.wikipedia.org/wiki/Naranja_(fruta)" },
-    { id: 6, titulo: "Pera", descripcion: "Fruta jugosa con forma característica.", url: "https://es.wikipedia.org/wiki/Pera" },
-    { id: 7, titulo: "Piña", descripcion: "Fruta tropical con sabor dulce y ácido.", url: "https://es.wikipedia.org/wiki/Piña" },
+  // Datos locales: juegos y servicios
+  const items = [
+    { id: 1, nombre: "Super Mario Bros", categoria: "Plataformas", descripcion: "Clásico juego de plataformas con Mario.", url: "https://es.wikipedia.org/wiki/Super_Mario_Bros." },
+    { id: 2, nombre: "Minecraft", categoria: "Sandbox", descripcion: "Juego de construcción y supervivencia.", url: "https://es.wikipedia.org/wiki/Minecraft" },
+    { id: 3, nombre: "League of Legends", categoria: "MOBA", descripcion: "Juego competitivo de estrategia en equipo.", url: "https://es.wikipedia.org/wiki/League_of_Legends" },
+    { id: 4, nombre: "Among Us", categoria: "Multijugador", descripcion: "Juego de deducción social y colaboración.", url: "https://es.wikipedia.org/wiki/Among_Us" },
+    { id: 5, nombre: "Tetris", categoria: "Puzzle", descripcion: "Juego de encajar piezas clásicas.", url: "https://es.wikipedia.org/wiki/Tetris" },
+    { id: 6, nombre: "Call of Duty", categoria: "FPS", descripcion: "Juego de disparos en primera persona.", url: "https://es.wikipedia.org/wiki/Call_of_Duty" },
+    { id: 7, nombre: "The Legend of Zelda", categoria: "Aventura", descripcion: "Juego de aventuras y exploración.", url: "https://es.wikipedia.org/wiki/The_Legend_of_Zelda" },
+    { id: 8, nombre: "Xbox Cloud Gaming", categoria: "Streaming", descripcion: "Servicio de juegos en la nube de Microsoft Xbox.", url: "https://www.xbox.com/es-ES/play" }
   ];
 
   const index = new FlexSearch.Document({
     document: {
       id: "id",
-      index: ["titulo", "descripcion"]
+      index: ["nombre", "categoria", "descripcion"]
     }
   });
 
-  documentos.forEach(doc => index.add(doc));
+  items.forEach(item => index.add(item));
 
   const input = document.getElementById("buscador");
   const resultadosDiv = document.getElementById("resultados");
@@ -49,12 +51,17 @@
 
     if (!query) return;
 
-    const resultadosTitulo = index.search(query, { field: "titulo", limit: 20, enrich: true });
+    const resultadosNombre = index.search(query, { field: "nombre", limit: 20, enrich: true });
+    const resultadosCategoria = index.search(query, { field: "categoria", limit: 20, enrich: true });
     const resultadosDescripcion = index.search(query, { field: "descripcion", limit: 20, enrich: true });
 
     const resultadosUnicos = new Map();
 
-    resultadosTitulo.forEach(r => {
+    resultadosNombre.forEach(r => {
+      r.result.forEach(res => resultadosUnicos.set(res.doc.id, res.doc));
+    });
+
+    resultadosCategoria.forEach(r => {
       r.result.forEach(res => resultadosUnicos.set(res.doc.id, res.doc));
     });
 
@@ -67,12 +74,13 @@
       return;
     }
 
-    resultadosUnicos.forEach(doc => {
+    resultadosUnicos.forEach(item => {
       const div = document.createElement("div");
       div.className = "resultado";
       div.innerHTML = `
-        <div class="titulo"><a href="${doc.url}" target="_blank" rel="noopener noreferrer">${doc.titulo}</a></div>
-        <div class="descripcion">${doc.descripcion}</div>
+        <div class="titulo"><a href="${item.url}" target="_blank" rel="noopener noreferrer">${item.nombre}</a></div>
+        <div class="categoria">Categoría: ${item.categoria}</div>
+        <div class="descripcion">${item.descripcion}</div>
       `;
       resultadosDiv.appendChild(div);
     });
