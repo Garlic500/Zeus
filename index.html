@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>Buscador local con FlexSearch</title>
+  <title>Buscador local con FlexSearch - Corregido</title>
   <script src="https://cdn.jsdelivr.net/npm/flexsearch@0.7.31/dist/flexsearch.bundle.js"></script>
   <style>
     body { font-family: Arial, sans-serif; max-width: 600px; margin: 20px auto; }
@@ -20,7 +20,6 @@
 <div id="resultados"></div>
 
 <script>
-  // Datos de ejemplo
   const documentos = [
     { id: 1, titulo: "Manzana", descripcion: "Una fruta roja y dulce." },
     { id: 2, titulo: "Banana", descripcion: "Fruta amarilla y alargada, rica en potasio." },
@@ -31,45 +30,47 @@
     { id: 7, titulo: "Piña", descripcion: "Fruta tropical con sabor dulce y ácido." },
   ];
 
-  // Crear índice FlexSearch
   const index = new FlexSearch.Document({
     document: {
-      id: 'id',
-      index: ['titulo', 'descripcion']
+      id: "id",
+      index: ["titulo", "descripcion"]
     }
   });
 
-  // Agregar documentos al índice
   documentos.forEach(doc => index.add(doc));
 
-  const input = document.getElementById('buscador');
-  const resultadosDiv = document.getElementById('resultados');
+  const input = document.getElementById("buscador");
+  const resultadosDiv = document.getElementById("resultados");
 
-  input.addEventListener('input', () => {
-    const query = input.value.trim();
-    resultadosDiv.innerHTML = '';
+  input.addEventListener("input", () => {
+    const query = input.value.trim().toLowerCase();
+    resultadosDiv.innerHTML = "";
 
     if (!query) return;
 
-    const results = index.search(query, { enrich: true });
+    // Buscar en ambos campos y combinar resultados
+    const resultadosTitulo = index.search(query, { field: "titulo", limit: 20, enrich: true });
+    const resultadosDescripcion = index.search(query, { field: "descripcion", limit: 20, enrich: true });
 
-    if (results.length === 0) {
-      resultadosDiv.innerHTML = '<p>No se encontraron resultados.</p>';
+    // Combinar resultados únicos
+    const resultadosUnicos = new Map();
+
+    resultadosTitulo.forEach(r => {
+      r.result.forEach(res => resultadosUnicos.set(res.doc.id, res.doc));
+    });
+
+    resultadosDescripcion.forEach(r => {
+      r.result.forEach(res => resultadosUnicos.set(res.doc.id, res.doc));
+    });
+
+    if (resultadosUnicos.size === 0) {
+      resultadosDiv.innerHTML = "<p>No se encontraron resultados.</p>";
       return;
     }
 
-    // FlexSearch devuelve resultados por campo, los combinamos:
-    const encontrados = new Map();
-
-    results.forEach(r => {
-      r.result.forEach(res => {
-        encontrados.set(res.doc.id, res.doc);
-      });
-    });
-
-    encontrados.forEach(doc => {
-      const div = document.createElement('div');
-      div.className = 'resultado';
+    resultadosUnicos.forEach(doc => {
+      const div = document.createElement("div");
+      div.className = "resultado";
       div.innerHTML = `
         <div class="titulo">${doc.titulo}</div>
         <div class="descripcion">${doc.descripcion}</div>
