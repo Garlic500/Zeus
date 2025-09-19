@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Zeuze proxy</title>
+  <title>Zeusproxy</title>
   <style>
     body, html {
       margin: 0;
@@ -54,13 +54,12 @@
 <iframe id="browserFrame"></iframe>
 
 <script>
-  // Tu Worker
   const workerURL = "https://winter-lab-f6cf.josuemaradona2.workers.dev/";
   const frame = document.getElementById("browserFrame");
   const input = document.getElementById("urlInput");
 
   function go() {
-    let value = input.value.trim();
+    const value = input.value.trim();
     if (!value) return;
 
     let target;
@@ -68,11 +67,11 @@
     if (value.startsWith("http://") || value.startsWith("https://")) {
       target = value;
     } else {
-      // Si no, hace búsqueda en Brave Search (compatible con iframe)
+      // Si no, usar Brave Search (compatible con iframe)
       target = "https://search.brave.com/search?q=" + encodeURIComponent(value);
     }
 
-    // Apunta el iframe al Worker con la URL
+    // Enviar al Worker con parámetro h
     frame.src = workerURL + "?h=" + encodeURIComponent(target);
   }
 
