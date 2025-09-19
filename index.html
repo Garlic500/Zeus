@@ -2,23 +2,29 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>Buscador DuckDuckGo simple</title>
+  <title>Buscador con iframe</title>
+  <style>
+    #resultado {
+      width: 100%;
+      height: 600px;
+      border: 1px solid #ccc;
+      margin-top: 10px;
+    }
+  </style>
 </head>
 <body>
-  <h1>Buscador DuckDuckGo</h1>
-  <form id="searchForm" action="https://duckduckgo.com/" method="GET" target="_blank" onsubmit="return validate()">
-    <input type="text" name="q" id="query" placeholder="Escribe tu búsqueda" style="width: 300px;" required />
-    <button type="submit">Buscar</button>
-  </form>
+  <h1>Buscador DuckDuckGo en iframe</h1>
+  <input type="text" id="query" placeholder="Escribe tu búsqueda" style="width:300px;" />
+  <button onclick="buscar()">Buscar</button>
+
+  <iframe id="resultado"></iframe>
 
   <script>
-    function validate() {
+    function buscar() {
       const q = document.getElementById('query').value.trim();
-      if (!q) {
-        alert('Por favor ingresa un término de búsqueda.');
-        return false; // evita enviar el formulario
-      }
-      return true; // permite enviar el formulario y abrir nueva pestaña
+      if (!q) return alert('Por favor ingresa un término de búsqueda.');
+      const iframe = document.getElementById('resultado');
+      iframe.src = 'https://duckduckgo.com/?q=' + encodeURIComponent(q);
     }
   </script>
 </body>
