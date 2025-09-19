@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Proxy en About:Blank</title>
+  <title>Proxy Simple en Nueva Ventana</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -18,34 +18,34 @@
   </style>
 </head>
 <body>
-  <h1>Abrir un sitio en una nueva ventana</h1>
-  <p>Ingresa la URL que quieres visitar:</p>
+  <h1>Abrir un sitio web en una nueva ventana</h1>
+  <p>Ingresa la URL que deseas visitar:</p>
   <input type="text" id="urlInput" placeholder="https://example.com" size="30">
   <button onclick="openSite()">Abrir Sitio</button>
 
   <script>
     function openSite() {
-      // Obtener la URL que el usuario introdujo
+      // Obtener la URL ingresada por el usuario
       const url = document.getElementById('urlInput').value;
       
-      // Validar si la URL no está vacía
+      // Validar que la URL no esté vacía
       if (!url) {
         alert("Por favor, ingresa una URL.");
         return;
       }
 
-      // Asegurarse de que la URL empieza con http:// o https://
+      // Asegurarse de que la URL comience con http:// o https://
       if (!/^https?:\/\//i.test(url)) {
         alert("Por favor, ingresa una URL válida que comience con http:// o https://.");
         return;
       }
 
-      // Abrir directamente la URL en la nueva ventana sin mostrar about:blank primero
+      // Intentar abrir la URL en una nueva ventana
       const newWindow = window.open(url, '_blank');
-
-      // Si no se permite abrir una nueva ventana (por ejemplo, bloqueadores de pop-ups)
+      
+      // Verificar si la ventana se bloqueó
       if (!newWindow) {
-        alert("Tu navegador bloqueó la ventana emergente. Permite ventanas emergentes para continuar.");
+        alert("Tu navegador ha bloqueado la ventana emergente. Permite ventanas emergentes para continuar.");
       }
     }
   </script>
