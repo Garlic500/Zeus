@@ -2,29 +2,30 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>Buscador con iframe</title>
-  <style>
-    #resultado {
-      width: 100%;
-      height: 600px;
-      border: 1px solid #ccc;
-      margin-top: 10px;
-    }
-  </style>
+  <title>Buscador DuckDuckGo con popup</title>
 </head>
 <body>
-  <h1>Buscador DuckDuckGo en iframe</h1>
+  <h1>Buscador DuckDuckGo</h1>
   <input type="text" id="query" placeholder="Escribe tu búsqueda" style="width:300px;" />
   <button onclick="buscar()">Buscar</button>
-
-  <iframe id="resultado"></iframe>
 
   <script>
     function buscar() {
       const q = document.getElementById('query').value.trim();
       if (!q) return alert('Por favor ingresa un término de búsqueda.');
-      const iframe = document.getElementById('resultado');
-      iframe.src = 'https://duckduckgo.com/?q=' + encodeURIComponent(q);
+      
+      // Abrir popup con opciones para evitar bloqueos
+      const width = 800;
+      const height = 600;
+      const left = (screen.width/2) - (width/2);
+      const top = (screen.height/2) - (height/2);
+
+      const url = 'https://duckduckgo.com/?q=' + encodeURIComponent(q);
+      const popup = window.open(url, 'BuscadorDuckDuckGo', `width=${width},height=${height},top=${top},left=${left},resizable=yes,scrollbars=yes`);
+
+      if (!popup || popup.closed || typeof popup.closed == 'undefined') {
+        alert('El popup fue bloqueado. Por favor permite popups para este sitio.');
+      }
     }
   </script>
 </body>
