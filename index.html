@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -32,3 +31,35 @@
     iframe {
       flex: 1;
       border: none;
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+</head>
+<body>
+
+<div id="searchBar">
+  <input id="query" type="text" placeholder="Escribe tu búsqueda...">
+  <button onclick="search()">Buscar</button>
+</div>
+
+<iframe id="resultFrame"></iframe>
+
+<script>
+  // Tu Worker
+  const workerURL = "https://winter-lab-f6cf.josuemaradona2.workers.dev/";
+
+  function search() {
+    const query = document.getElementById("query").value.trim();
+    if (!query) return;
+
+    // DuckDuckGo como ejemplo
+    const target = "https://duckduckgo.com/?q=" + encodeURIComponent(query);
+
+    // Cargar en iframe usando el Worker
+    document.getElementById("resultFrame").src = workerURL + "?h=" + encodeURIComponent(target);
+  }
+</script>
+
+</body>
+</html>
