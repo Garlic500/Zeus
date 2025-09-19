@@ -2,84 +2,16 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>Buscador DuckDuckGo con JSONP</title>
-  <style>
-    body { font-family: Arial, sans-serif; max-width: 700px; margin: 20px auto; }
-    input { width: 70%; padding: 8px; }
-    button { padding: 8px 12px; }
-    .resultado { margin-top: 20px; }
-    .resultado a { text-decoration: none; color: #0074D9; }
-    .resultado a:hover { text-decoration: underline; }
-    .resultado p { margin: 5px 0; }
-  </style>
+  <title>Buscador Simple</title>
 </head>
 <body>
 
-<h1>Buscador DuckDuckGo (API Instantánea con JSONP)</h1>
-<input id="query" type="text" placeholder="Escribe tu búsqueda" />
-<button onclick="buscar()">Buscar</button>
+<h1>Buscador DuckDuckGo (sin bloqueos)</h1>
 
-<div id="resultados" class="resultado"></div>
-
-<script>
-  function buscar() {
-    const q = document.getElementById('query').value.trim();
-    const resDiv = document.getElementById('resultados');
-    resDiv.innerHTML = '';
-
-    if (!q) {
-      alert('Por favor ingresa un término de búsqueda.');
-      return;
-    }
-
-    // Limpia el callback anterior si existe
-    if (window.jsonpCallback) {
-      window.jsonpCallback = null;
-    }
-    // Elimina script anterior si existe
-    const oldScript = document.getElementById('jsonpScript');
-    if (oldScript) oldScript.remove();
-
-    // Crea un callback para JSONP
-    window.jsonpCallback = function(data) {
-      let html = '';
-
-      if (data.AbstractURL && data.AbstractText) {
-        html += `<h2>Resumen:</h2><p>${data.AbstractText} <a href="${data.AbstractURL}" target="_blank">[Más info]</a></p>`;
-      }
-
-      if (data.RelatedTopics && data.RelatedTopics.length > 0) {
-        html += `<h3>Resultados relacionados:</h3>`;
-        data.RelatedTopics.forEach(topic => {
-          if (topic.Text && topic.FirstURL) {
-            html += `<p><a href="${topic.FirstURL}" target="_blank">${topic.Text}</a></p>`;
-          } else if (topic.Topics) {
-            topic.Topics.forEach(subtopic => {
-              if (subtopic.Text && subtopic.FirstURL) {
-                html += `<p><a href="${subtopic.FirstURL}" target="_blank">${subtopic.Text}</a></p>`;
-              }
-            });
-          }
-        });
-      }
-
-      if (!html) html = '<p>No se encontraron resultados.</p>';
-
-      resDiv.innerHTML = html;
-    };
-
-    // Crea el script JSONP con callback
-    const script = document.createElement('script');
-    script.src = `https://api.duckduckgo.com/?q=${encodeURIComponent(q)}&format=json&no_redirect=1&skip_disambig=1&callback=jsonpCallback`;
-    script.id = 'jsonpScript';
-    document.body.appendChild(script);
-  }
-
-  // Permitir búsqueda con Enter
-  document.getElementById('query').addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') buscar();
-  });
-</script>
+<form action="https://duckduckgo.com/" method="GET" target="_self">
+  <input type="text" name="q" placeholder="Buscar..." required style="width: 300px;" />
+  <button type="submit">Buscar</button>
+</form>
 
 </body>
 </html>
