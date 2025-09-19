@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Mini Navegador Nebula</title>
+  <title>Mini Navegador Brave</title>
   <style>
     body, html {
       margin: 0;
@@ -46,8 +46,8 @@
 <body>
 
 <div id="navBar">
-  <input id="urlInput" type="text" placeholder="Escribe URL o búsqueda...">
-  <button onclick="go()">Ir</button>
+  <input id="urlInput" type="text" placeholder="Escribe tu búsqueda...">
+  <button onclick="go()">Buscar</button>
   <button onclick="reload()">Recargar</button>
 </div>
 
@@ -59,19 +59,13 @@
   const input = document.getElementById("urlInput");
 
   function go() {
-    const value = input.value.trim();
-    if (!value) return;
+    const query = input.value.trim();
+    if (!query) return;
 
-    let target;
-    // Si es URL completa
-    if (value.startsWith("http://") || value.startsWith("https://")) {
-      target = value;
-    } else {
-      // Si no, usar Brave Search (compatible con iframe)
-      target = "https://search.brave.com/search?q=" + encodeURIComponent(value);
-    }
+    // Todas las búsquedas van a Brave Search
+    const target = "https://search.brave.com/search?q=" + encodeURIComponent(query);
 
-    // ⚠ Enviar al Worker con ?h=
+    // Enviar al Worker con ?h=
     frame.src = workerURL + "?h=" + encodeURIComponent(target);
   }
 
@@ -79,8 +73,8 @@
     frame.contentWindow.location.reload();
   }
 
-  // Página inicial
-  frame.src = workerURL + "?h=" + encodeURIComponent("https://en.wikipedia.org/wiki/Main_Page");
+  // Página inicial: Brave Search
+  frame.src = workerURL + "?h=" + encodeURIComponent("https://search.brave.com/");
 </script>
 
 </body>
