@@ -1,18 +1,4 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Proxy Web</title>
-</head>
-<body>
-    <h1>Accede a sitios bloqueados</h1>
-    <form action="https://tu-backend.herokuapp.com/proxy" method="GET" target="proxy-iframe">
-        <label for="url">Introduce la URL:</label>
-        <input type="text" id="url" name="url" required />
-        <button type="submit">Acceder</button>
-    </form>
-
-    <iframe name="proxy-iframe" id="proxy-iframe" width="100%" height="600px"></iframe>
-</body>
-</html>
+<form action="https://duckduckgo.com/" method="GET" target="_blank">
+  <input type="text" name="q" placeholder="Buscar en DuckDuckGo">
+  <button type="submit">Buscar</button>
+</form>
