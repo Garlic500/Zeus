@@ -54,6 +54,7 @@
 <iframe id="browserFrame"></iframe>
 
 <script>
+  // Tu Worker
   const workerURL = "https://winter-lab-f6cf.josuemaradona2.workers.dev/";
   const frame = document.getElementById("browserFrame");
   const input = document.getElementById("urlInput");
@@ -67,11 +68,11 @@
     if (value.startsWith("http://") || value.startsWith("https://")) {
       target = value;
     } else {
-      // Si no, buscar en Wikipedia (funciona en iframe)
-      target = "https://en.wikipedia.org/wiki/" + encodeURIComponent(value);
+      // Si no, hace búsqueda en Brave Search (compatible con iframe)
+      target = "https://search.brave.com/search?q=" + encodeURIComponent(value);
     }
 
-    // Cambia el iframe al Worker con la URL
+    // Apunta el iframe al Worker con la URL
     frame.src = workerURL + "?h=" + encodeURIComponent(target);
   }
 
@@ -79,7 +80,7 @@
     frame.contentWindow.location.reload();
   }
 
-  // Opción: carga página inicial
+  // Página inicial
   frame.src = workerURL + "?h=" + encodeURIComponent("https://en.wikipedia.org/wiki/Main_Page");
 </script>
 
