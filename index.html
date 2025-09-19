@@ -1,25 +1,28 @@
-<input id="search" type="text" placeholder="Buscar...">
-<button onclick="buscar()">Buscar</button>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>DuckDuckGo</title>
+</head>
+<body>
+  <h1>Buscador DuckDuckGo</h1>
+  <input id="query" type="text" placeholder="Escribe tu búsqueda" style="width: 300px;" />
+  <button onclick="buscar()">Buscar</button>
 
-<div id="resultados"></div>
-
-<script>
-  async function buscar() {
-    const query = document.getElementById('search').value;
-    const url = `https://api.duckduckgo.com/?q=${encodeURIComponent(query)}&format=json&no_redirect=1`;
-    const res = await fetch(url);
-    const data = await res.json();
-    
-    let html = '';
-    if (data.RelatedTopics && data.RelatedTopics.length > 0) {
-      data.RelatedTopics.forEach(item => {
-        if (item.Text && item.FirstURL) {
-          html += `<p><a href="${item.FirstURL}" target="_blank">${item.Text}</a></p>`;
-        }
-      });
-    } else {
-      html = '<p>No se encontraron resultados.</p>';
+  <script>
+    function buscar() {
+      const q = document.getElementById('query').value.trim();
+      if (!q) return alert('Por favor ingresa un término de búsqueda.');
+      // Abrir resultados en una nueva pestaña limpia (about:blank)
+      const url = 'https://duckduckgo.com/?q=' + encodeURIComponent(q);
+      const newWindow = window.open('about:blank');
+      newWindow.location.href = url;
     }
-    document.getElementById('resultados').innerHTML = html;
-  }
-</script>
+
+    // También puedes permitir buscar presionando Enter
+    document.getElementById('query').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') buscar();
+    });
+  </script>
+</body>
+</html>
