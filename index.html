@@ -40,14 +40,13 @@
         return;
       }
 
-      // Abrir una nueva ventana con about:blank
-      const newWindow = window.open('about:blank', '_blank');
+      // Abrir directamente la URL en la nueva ventana sin mostrar about:blank primero
+      const newWindow = window.open(url, '_blank');
 
-      // Usar setTimeout para asegurarse de que la ventana se abra correctamente antes de intentar cambiar la ubicación
-      setTimeout(() => {
-        // Cargar la URL en la nueva ventana
-        newWindow.location.href = url;
-      }, 500); // Asegura que la ventana haya sido completamente abierta antes de redirigir
+      // Si no se permite abrir una nueva ventana (por ejemplo, bloqueadores de pop-ups)
+      if (!newWindow) {
+        alert("Tu navegador bloqueó la ventana emergente. Permite ventanas emergentes para continuar.");
+      }
     }
   </script>
 </body>
