@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Proxy Buscador Nebula</title>
+  <title>Mini Navegador Nebula</title>
   <style>
     body, html {
       margin: 0;
@@ -10,20 +10,21 @@
       height: 100%;
       display: flex;
       flex-direction: column;
+      font-family: Arial, sans-serif;
     }
-    #searchBar {
+    #navBar {
       padding: 10px;
       background-color: #222;
       color: white;
       display: flex;
       gap: 10px;
     }
-    #searchBar input {
+    #navBar input {
       flex: 1;
       padding: 5px;
       font-size: 16px;
     }
-    #searchBar button {
+    #navBar button {
       padding: 5px 10px;
       font-size: 16px;
       cursor: pointer;
@@ -38,26 +39,37 @@
 </head>
 <body>
 
-<div id="searchBar">
-  <input id="query" type="text" placeholder="Escribe tu búsqueda...">
-  <button onclick="search()">Buscar</button>
+<div id="navBar">
+  <input id="urlInput" type="text" placeholder="Escribe URL o búsqueda...">
+  <button onclick="go()">Ir</button>
+  <button onclick="reload()">Recargar</button>
 </div>
 
-<iframe id="resultFrame"></iframe>
+<iframe id="browserFrame"></iframe>
 
 <script>
-  // Tu Worker
   const workerURL = "https://winter-lab-f6cf.josuemaradona2.workers.dev/";
+  const frame = document.getElementById("browserFrame");
+  const input = document.getElementById("urlInput");
 
-  function search() {
-    const query = document.getElementById("query").value.trim();
-    if (!query) return;
+  function go() {
+    let value = input.value.trim();
+    if (!value) return;
 
-    // DuckDuckGo como ejemplo
-    const target = "https://duckduckgo.com/?q=" + encodeURIComponent(query);
+    // Si empieza con http, lo usamos como URL directa
+    let target;
+    if (value.startsWith("http://") || value.startsWith("https://")) {
+      target = value;
+    } else {
+      // Sino hacemos una búsqueda en DuckDuckGo
+      target = "https://duckduckgo.com/?q=" + encodeURIComponent(value);
+    }
 
-    // Cargar en iframe usando el Worker
-    document.getElementById("resultFrame").src = workerURL + "?h=" + encodeURIComponent(target);
+    frame.src = workerURL + "?h=" + encodeURIComponent(target);
+  }
+
+  function reload() {
+    frame.contentWindow.location.reload();
   }
 </script>
 
