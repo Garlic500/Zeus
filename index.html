@@ -1,4 +1,25 @@
-<form action="https://duckduckgo.com/" method="GET" target="_blank">
-  <input type="text" name="q" placeholder="Buscar en DuckDuckGo">
-  <button type="submit">Buscar</button>
-</form>
+<input id="search" type="text" placeholder="Buscar...">
+<button onclick="buscar()">Buscar</button>
+
+<div id="resultados"></div>
+
+<script>
+  async function buscar() {
+    const query = document.getElementById('search').value;
+    const url = `https://api.duckduckgo.com/?q=${encodeURIComponent(query)}&format=json&no_redirect=1`;
+    const res = await fetch(url);
+    const data = await res.json();
+    
+    let html = '';
+    if (data.RelatedTopics && data.RelatedTopics.length > 0) {
+      data.RelatedTopics.forEach(item => {
+        if (item.Text && item.FirstURL) {
+          html += `<p><a href="${item.FirstURL}" target="_blank">${item.Text}</a></p>`;
+        }
+      });
+    } else {
+      html = '<p>No se encontraron resultados.</p>';
+    }
+    document.getElementById('resultados').innerHTML = html;
+  }
+</script>
