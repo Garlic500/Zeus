@@ -2,27 +2,24 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>DuckDuckGo</title>
+  <title>Buscador DuckDuckGo simple</title>
 </head>
 <body>
   <h1>Buscador DuckDuckGo</h1>
-  <input id="query" type="text" placeholder="Escribe tu búsqueda" style="width: 300px;" />
-  <button onclick="buscar()">Buscar</button>
+  <form id="searchForm" action="https://duckduckgo.com/" method="GET" target="_blank" onsubmit="return validate()">
+    <input type="text" name="q" id="query" placeholder="Escribe tu búsqueda" style="width: 300px;" required />
+    <button type="submit">Buscar</button>
+  </form>
 
   <script>
-    function buscar() {
+    function validate() {
       const q = document.getElementById('query').value.trim();
-      if (!q) return alert('Por favor ingresa un término de búsqueda.');
-      // Abrir resultados en una nueva pestaña limpia (about:blank)
-      const url = 'https://duckduckgo.com/?q=' + encodeURIComponent(q);
-      const newWindow = window.open('about:blank');
-      newWindow.location.href = url;
+      if (!q) {
+        alert('Por favor ingresa un término de búsqueda.');
+        return false; // evita enviar el formulario
+      }
+      return true; // permite enviar el formulario y abrir nueva pestaña
     }
-
-    // También puedes permitir buscar presionando Enter
-    document.getElementById('query').addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') buscar();
-    });
   </script>
 </body>
 </html>
