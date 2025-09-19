@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>Buscador con API DuckDuckGo</title>
+  <title>Buscador DuckDuckGo con JSONP</title>
   <style>
     body { font-family: Arial, sans-serif; max-width: 700px; margin: 20px auto; }
     input { width: 70%; padding: 8px; }
@@ -15,66 +15,70 @@
 </head>
 <body>
 
-<h1>Buscador DuckDuckGo (API Instantánea)</h1>
+<h1>Buscador DuckDuckGo (API Instantánea con JSONP)</h1>
 <input id="query" type="text" placeholder="Escribe tu búsqueda" />
 <button onclick="buscar()">Buscar</button>
 
 <div id="resultados" class="resultado"></div>
 
 <script>
-async function buscar() {
-  const q = document.getElementById('query').value.trim();
-  const resDiv = document.getElementById('resultados');
-  resDiv.innerHTML = '';
+  function buscar() {
+    const q = document.getElementById('query').value.trim();
+    const resDiv = document.getElementById('resultados');
+    resDiv.innerHTML = '';
 
-  if (!q) {
-    alert('Por favor ingresa un término de búsqueda.');
-    return;
-  }
-
-  const url = `https://api.duckduckgo.com/?q=${encodeURIComponent(q)}&format=json&no_redirect=1&skip_disambig=1`;
-
-  try {
-    const response = await fetch(url);
-    if (!response.ok) throw new Error('Error en la API');
-    const data = await response.json();
-
-    let html = '';
-
-    if (data.AbstractURL && data.AbstractText) {
-      html += `<h2>Resumen:</h2><p>${data.AbstractText} <a href="${data.AbstractURL}" target="_blank">[Más info]</a></p>`;
+    if (!q) {
+      alert('Por favor ingresa un término de búsqueda.');
+      return;
     }
 
-    if (data.RelatedTopics && data.RelatedTopics.length > 0) {
-      html += `<h3>Resultados relacionados:</h3>`;
-      data.RelatedTopics.forEach(topic => {
-        if (topic.Text && topic.FirstURL) {
-          html += `<p><a href="${topic.FirstURL}" target="_blank">${topic.Text}</a></p>`;
-        } else if (topic.Topics) {
-          // Subtemas
-          topic.Topics.forEach(subtopic => {
-            if (subtopic.Text && subtopic.FirstURL) {
-              html += `<p><a href="${subtopic.FirstURL}" target="_blank">${subtopic.Text}</a></p>`;
-            }
-          });
-        }
-      });
+    // Limpia el callback anterior si existe
+    if (window.jsonpCallback) {
+      window.jsonpCallback = null;
     }
+    // Elimina script anterior si existe
+    const oldScript = document.getElementById('jsonpScript');
+    if (oldScript) oldScript.remove();
 
-    if (!html) html = '<p>No se encontraron resultados.</p>';
+    // Crea un callback para JSONP
+    window.jsonpCallback = function(data) {
+      let html = '';
 
-    resDiv.innerHTML = html;
+      if (data.AbstractURL && data.AbstractText) {
+        html += `<h2>Resumen:</h2><p>${data.AbstractText} <a href="${data.AbstractURL}" target="_blank">[Más info]</a></p>`;
+      }
 
-  } catch (error) {
-    resDiv.innerHTML = '<p>Error al obtener resultados.</p>';
-    console.error(error);
+      if (data.RelatedTopics && data.RelatedTopics.length > 0) {
+        html += `<h3>Resultados relacionados:</h3>`;
+        data.RelatedTopics.forEach(topic => {
+          if (topic.Text && topic.FirstURL) {
+            html += `<p><a href="${topic.FirstURL}" target="_blank">${topic.Text}</a></p>`;
+          } else if (topic.Topics) {
+            topic.Topics.forEach(subtopic => {
+              if (subtopic.Text && subtopic.FirstURL) {
+                html += `<p><a href="${subtopic.FirstURL}" target="_blank">${subtopic.Text}</a></p>`;
+              }
+            });
+          }
+        });
+      }
+
+      if (!html) html = '<p>No se encontraron resultados.</p>';
+
+      resDiv.innerHTML = html;
+    };
+
+    // Crea el script JSONP con callback
+    const script = document.createElement('script');
+    script.src = `https://api.duckduckgo.com/?q=${encodeURIComponent(q)}&format=json&no_redirect=1&skip_disambig=1&callback=jsonpCallback`;
+    script.id = 'jsonpScript';
+    document.body.appendChild(script);
   }
-}
 
-// Permitir búsqueda con Enter
-document.getElementById('query').addEventListener('keydown', (e) => {
-  if (e.key === 'Enter') buscar();
-});
+  // Permitir búsqueda con Enter
+  document.getElementById('query').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') buscar();
+  });
 </script>
 
 </body>
