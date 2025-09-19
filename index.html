@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Zeusproxy</title>
+  <title>Mini Navegador Nebula</title>
   <style>
     body, html {
       margin: 0;
@@ -63,7 +63,7 @@
     if (!value) return;
 
     let target;
-    // Si empieza con http, usa como URL directa
+    // Si es URL completa
     if (value.startsWith("http://") || value.startsWith("https://")) {
       target = value;
     } else {
@@ -71,7 +71,7 @@
       target = "https://search.brave.com/search?q=" + encodeURIComponent(value);
     }
 
-    // Enviar al Worker con parámetro h
+    // ⚠ Enviar al Worker con ?h=
     frame.src = workerURL + "?h=" + encodeURIComponent(target);
   }
 
