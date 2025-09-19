@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Proxy Simple</title>
+  <title>Proxy en About:Blank</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -18,7 +18,7 @@
   </style>
 </head>
 <body>
-  <h1>Proxy Simple en HTML</h1>
+  <h1>Abrir un sitio en una nueva ventana</h1>
   <p>Ingresa la URL que quieres visitar:</p>
   <input type="text" id="urlInput" placeholder="https://example.com" size="30">
   <button onclick="openSite()">Abrir Sitio</button>
@@ -40,11 +40,14 @@
         return;
       }
 
-      // Abrir una nueva ventana en blanco
+      // Abrir una nueva ventana con about:blank
       const newWindow = window.open('about:blank', '_blank');
-      
-      // Cargar la URL en la nueva ventana
-      newWindow.location.href = url;
+
+      // Usar setTimeout para asegurarse de que la ventana se abra correctamente antes de intentar cambiar la ubicación
+      setTimeout(() => {
+        // Cargar la URL en la nueva ventana
+        newWindow.location.href = url;
+      }, 500); // Asegura que la ventana haya sido completamente abierta antes de redirigir
     }
   </script>
 </body>
